@@ -242,10 +242,6 @@ skinparam swimlane {
 }
 !endsub
 
-`````````````````````````````
-''Modified for custom theme''
-`````````````````````````````
-
 !startsub activity
 
 skinparam activity {
@@ -331,10 +327,6 @@ skinparam sequence {
 }
 !endsub
 
-`````````````````````````````
-''Modified for custom theme''
-`````````````````````````````
-
 !startsub partition
 
 skinparam partition {
@@ -380,10 +372,6 @@ skinparam agent {
 	FontColor $DARK
 }
 !endsub
-
-`````````````````````````````
-''Modified for custom theme''
-`````````````````````````````
 
 !startsub note
 
