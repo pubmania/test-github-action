@@ -1,8 +1,9 @@
 name: Post-Deployment Actions
 
 on:
-  deployment_status:
-    types: [success]  # Trigger only on successful deployments
+  push:
+    branches:
+      - gh-pages  # Trigger on pushes to the gh-pages branch
 
 permissions:
   contents: read  # Required to read repository contents
