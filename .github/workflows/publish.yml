@@ -30,4 +30,4 @@ jobs:
         env:
           BSKY_HANDLE: ${{ secrets.BSKY_HANDLE }}
           BSKY_APP_PWD: ${{ secrets.BSKY_APP_PWD }}
-          DID: ${{ vars.DID }}
+          DID: ${{ secrets.DID }}
