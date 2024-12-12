@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - gh-pages  # Trigger on pushes to the gh-pages branch
+  workflow_dispatch:
 
 permissions:
   contents: read  # Required to read repository contents
