@@ -3,6 +3,7 @@ name: Post-Deployment Actions
 on:
   deployment_status:
     types: [success]  # Trigger only on successful deployments
+  workflow_dispatch:
 
 permissions:
   contents: read  # Required to read repository contents
