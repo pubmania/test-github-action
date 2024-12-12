@@ -36,14 +36,11 @@ jobs:
       - name: Run Python script
         env:
           NEW_FILES: ${{ env.new_files }}
-          #SITE_BASE_URL: ${{ vars.SITE_URL }}
         run: |
           python -c "
 import os
 # Get the filenames from the environment variable
 new_files = os.getenv('NEW_FILES', '').split()
 for filename in new_files:
-  print(file)
+  print(filename)  # Corrected from 'file' to 'filename'
           "
-
-
