@@ -7,7 +7,7 @@ use_directory_urls: False
 theme:
   name: material
   
-  custom_dir: overrides
+  #custom_dir: overrides
   
   features:
   - content.code.annotate
