@@ -1,6 +1,6 @@
 ---
-title: "Bluesky for comments on mkdocs blog 1"
-slug: "bluesky-for-comments-on-mkdocs-blog-1"
+title: "Bluesky for comments on mkdocs blog 2"
+slug: "bluesky-for-comments-on-mkdocs-blog-2"
 authors: [ankit]
 date: 
   created: 2024-12-10 21:57:00
