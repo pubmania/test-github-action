@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - gh-pages  # Trigger on pushes to the gh-pages branch
-  workflow_dispatch:
+  workflow_dispatch:  # Allows manual triggering of the workflow
 
 permissions:
   contents: read  # Required to read repository contents
@@ -28,8 +28,13 @@ jobs:
       - name: Get new documentation filenames
         id: get_new_files
         run: |
-          # Find newly added markdown files in /docs/posts
-          NEW_FILES=$(git diff --name-status HEAD~1 HEAD | grep '^A' | awk '{print $2}' | grep '^docs/posts/.*\.md$')
+          # Check if there are any previous commits
+          if [ $(git rev-list --count HEAD) -gt 1 ]; then
+            # Find newly added markdown files in /docs/posts
+            NEW_FILES=$(git diff --name-status HEAD~1 HEAD | grep '^A' | awk '{print $2}' | grep '^docs/posts/.*\.md$')
+          else
+            NEW_FILES=""
+          fi
 
           # Export filenames as a GitHub output
           echo "new_files=$NEW_FILES" >> $GITHUB_ENV
