@@ -1,0 +1,11 @@
+{% if page.meta.bsky %}
+<h2 id="__comments">
+  <span class="twemoji" style="margin-right: 10px;">
+    {% include ".icons/fontawesome/brands/square-bluesky.svg" %}
+  </span>
+  {{ lang.t("meta.comments") }}
+</h2>
+<script type="module" src="{{ '/assets/js/bluesky-comments.mjs' }}"></script>
+<bluesky-comments url={{ page.meta.bsky }}>
+</bluesky-comments>
+{% endif %}
