@@ -37,10 +37,4 @@ jobs:
         env:
           NEW_FILES: ${{ env.new_files }}
         run: |
-          python -c "
-import os
-# Get the filenames from the environment variable
-new_files = os.getenv('NEW_FILES', '').split()
-for filename in new_files:
-  print(filename)  # Corrected from 'file' to 'filename'
-          "
+          echo "$NEW_FILES"
