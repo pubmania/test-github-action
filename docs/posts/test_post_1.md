@@ -13,6 +13,8 @@ categories:
   - Development
 ---
 
+## Change 1
+
 ## Background
 
 I have recently migrated this blog from Jekyll to Mkdocs using material theme. I was also planning to move away from Disqus commenting system given all the known issues and just when I had finished the migration to Mkdocs, there was [this post from Emily Liu](https://emilyliu.me/blog/comments) - which showcases how easily the bluesky replies to a post can be added in comments section of a blog page. Followed closely by this, was a [post from Cory Zue](https://www.coryzue.com/writing/bluesky-comments/) who created NPM packaging. 
