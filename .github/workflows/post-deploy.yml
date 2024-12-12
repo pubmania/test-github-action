@@ -32,9 +32,7 @@ jobs:
           # Export filenames as a GitHub output
           echo "new_files=$NEW_FILES" >> $GITHUB_ENV
 
-      # Step 4: Run Python script to handle URLs
-      - name: Run Python script
-        env:
-          NEW_FILES: ${{ env.new_files }}
+      # Step 4: Echo the new files
+      - name: Echo new files
         run: |
-          echo "$NEW_FILES"
+          echo "${{ env.new_files }}"
