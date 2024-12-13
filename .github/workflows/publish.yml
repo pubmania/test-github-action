@@ -33,3 +33,7 @@ jobs:
           DID: ${{ secrets.DID }}
       - name: Run Post-Deployment Script
         run: python post_deploy.py
+        env:
+          BSKY_HANDLE: ${{ secrets.BSKY_HANDLE }}
+          BSKY_APP_PWD: ${{ secrets.BSKY_APP_PWD }}
+          DID: ${{ secrets.DID }}        
