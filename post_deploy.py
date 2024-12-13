@@ -53,7 +53,7 @@ def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directo
         print(f"url: https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html")
         print(f"img_path: {image_directory}/{file_path.split('/')[-1].split('.')[0]}.png")
         url = f"https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html"
-        image_path = f"{image_directory}/{file_path.split('.')[0]}.png"
+        image_path = f"{image_directory}/{file_path.split('/')[-1].split('.')[0]}.png"
         
         ####################################################################
         #### skip posting if created date is more than 5 days old###########
