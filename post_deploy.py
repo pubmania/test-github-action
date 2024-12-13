@@ -135,7 +135,6 @@ def main():
         path = 'docs/posts'
         image_directory = os.path.join(os.environ['GITHUB_WORKSPACE'], 'site','assets','images','social','posts')
         site_url = os.environ['SITE_URL']
-        #image_directory = '/home/runner/work/test-github-action/test-github-action/site/assets/images/social/posts'
         get_yaml_frontmatter(path,access_token, at_client,image_directory,site_url)
 
 if __name__ == "__main__":
