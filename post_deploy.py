@@ -6,7 +6,7 @@ import datetime
 from atproto import Client, IdResolver, models
 import requests
 
-def get_yaml_frontmatter(path,access_token,at_client,image_directory):
+def get_yaml_frontmatter(path,access_token,at_client,image_directory,site_url):
     # Regex to match YAML front matter
     yaml_regex = re.compile(r'^(---\n.*?\n---\n)', re.DOTALL)
 
@@ -16,14 +16,14 @@ def get_yaml_frontmatter(path,access_token,at_client,image_directory):
         for filename in os.listdir(path):
             if filename.endswith('.md'):
                 file_path = os.path.join(path, filename)
-                process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directory)
+                process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directory,site_url)
     elif os.path.isfile(path) and path.endswith('.md'):
         # If it's a single .md file, process it
-        process_file_yaml(path, yaml_regex,access_token,at_client,image_directory)
+        process_file_yaml(path, yaml_regex,access_token,at_client,image_directory,site_url)
     else:
         print("Provided path is neither a valid directory nor a .md file.")
 
-def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directory):
+def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directory,site_url):
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
     description_value = ""
@@ -50,9 +50,10 @@ def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directo
         yyyy = created_date.year
         mm = f"{created_date.month:02}"
         dd = f"{created_date.day:02}"
-        print(f"url: https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html")
+        #print(f"url: https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html")
+        print(f"url: {site_url}/{yyyy}/{mm}/{dd}/{slug_value}.html")
         print(f"img_path: {image_directory}/{file_path.split('/')[-1].split('.')[0]}.png")
-        url = f"https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html"
+        url = f"{site_url}/{yyyy}/{mm}/{dd}/{slug_value}.html"
         image_path = f"{image_directory}/{file_path.split('/')[-1].split('.')[0]}.png"
         
         ####################################################################
@@ -132,8 +133,10 @@ def main():
         session = resp.json()
         access_token = session["accessJwt"]
         path = 'docs/posts'
-        image_directory = '/home/runner/work/test-github-action/test-github-action/site/assets/images/social/posts'
-        get_yaml_frontmatter(path,access_token, at_client,image_directory)
+        image_directory = os.path.join(os.environ['GITHUB_WORKSPACE'], 'site','assets','images','social','posts')
+        site_url = os.environ['SITE_URL']
+        #image_directory = '/home/runner/work/test-github-action/test-github-action/site/assets/images/social/posts'
+        get_yaml_frontmatter(path,access_token, at_client,image_directory,site_url)
 
 if __name__ == "__main__":
     main()
