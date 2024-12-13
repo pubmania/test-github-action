@@ -45,7 +45,7 @@ def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directo
             if key == 'title':
                 title_value = value
             if key == 'description':
-                description_value = values
+                description_value = value
         print(f"created_date: {created_date} and slug_value: {slug_value}")
         yyyy = created_date.year
         mm = f"{created_date.month:02}"
