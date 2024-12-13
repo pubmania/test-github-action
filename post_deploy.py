@@ -58,7 +58,7 @@ def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directo
         ####################################################################
         #### skip posting if created date is more than 5 days old###########
         ####################################################################
-        
+        created_date_str = f"{created_date}"
         # Convert the created_date string to a datetime object
         created_date = datetime.datetime.fromisoformat(created_date_str)
         # Get the current date
