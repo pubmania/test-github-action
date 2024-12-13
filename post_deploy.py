@@ -68,7 +68,7 @@ def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directo
         if difference <= 5:
             
             #####################################################################################
-            #######################skip posting if url is already posted on bluesky##############
+            ################### skip posting if url is already posted on bluesky#################
             #####################################################################################
             
             search_params = models.app.bsky.feed.search_posts.Params(
