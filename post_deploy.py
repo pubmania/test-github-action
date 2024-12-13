@@ -79,7 +79,7 @@ def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directo
                 )
             
             response = at_client.app.bsky.feed.search_posts(params=search_params)
-            if response.hits_total is not None:
+            if response is not None:
                 print("BSKY POST ALREADY EXISTS, NO ACTION NEEDED")
             else:
                 # Open the image file in binary mode
