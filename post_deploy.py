@@ -50,6 +50,20 @@ def main():
     posts_directory = 'docs/posts'  # Update this path
     path = 'docs/posts'
     get_yaml_frontmatter(path)
+    
+    # Print all directories and files in the .cache directory
+    cache_directory = '.cache'
+    print(f"Contents of the '{cache_directory}' directory:")
+    
+    if os.path.exists(cache_directory):
+        for entry in os.listdir(cache_directory):
+            entry_path = os.path.join(cache_directory, entry)
+            if os.path.isdir(entry_path):
+                print(f"Directory: {entry}")
+            else:
+                print(f"File: {entry}")
+    else:
+        print(f"The directory '{cache_directory}' does not exist.")
 
 if __name__ == "__main__":
     main()
