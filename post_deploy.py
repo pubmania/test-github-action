@@ -52,7 +52,7 @@ def main():
     get_yaml_frontmatter(path)
     
     # Print all directories and files in the .cache directory
-    cache_directory = '.cache'
+    cache_directory = '/home/runner/work/test-github-action/test-github-action/site/assets/images/social/posts'
     print(f"Contents of the '{cache_directory}' directory:")
     
     if os.path.exists(cache_directory):
