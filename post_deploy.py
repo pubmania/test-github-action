@@ -3,8 +3,10 @@ import re
 import os
 import yaml
 import datetime
+from atproto import Client, IdResolver, models
+import requests
 
-def get_yaml_frontmatter(path):
+def get_yaml_frontmatter(path,access_token,at_client,image_directory):
     # Regex to match YAML front matter
     yaml_regex = re.compile(r'^(---\n.*?\n---\n)', re.DOTALL)
 
@@ -14,17 +16,20 @@ def get_yaml_frontmatter(path):
         for filename in os.listdir(path):
             if filename.endswith('.md'):
                 file_path = os.path.join(path, filename)
-                process_file_yaml(file_path, yaml_regex)
+                process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directory)
     elif os.path.isfile(path) and path.endswith('.md'):
         # If it's a single .md file, process it
-        process_file_yaml(path, yaml_regex)
+        process_file_yaml(path, yaml_regex,access_token,at_client,image_directory)
     else:
         print("Provided path is neither a valid directory nor a .md file.")
 
-def process_file_yaml(file_path, yaml_regex):
+def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directory):
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
-
+    description_value = ""
+    url = ""
+    title_value = ""
+    
     # Find YAML front matter
     match = yaml_regex.search(content)
     if match:
@@ -37,33 +42,97 @@ def process_file_yaml(file_path, yaml_regex):
                 created_date = value['created']
             if key == 'slug':
                 slug_value = value
+            if key == 'title':
+                title_value = value
+            if key == 'description':
+                description_value = values
         print(f"created_date: {created_date} and slug_value: {slug_value}")
         yyyy = created_date.year
         mm = f"{created_date.month:02}"
         dd = f"{created_date.day:02}"
-        print(f"{yyyy}/{mm}/{dd}/{slug_value}.html")
-        print(f"assets/images/social/posts/{file_path.split('.')[0]}.png")
+        print(f"url: https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html")
+        print(f"img_file: {image_directory}/{file_path.split('.')[0]}.png")
+        url = f"https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html"
+        img_file = f"{image_directory}/{file_path.split('.')[0]}.png"
+        
+        ####################################################################
+        #### skip posting if created date is more than 5 days old###########
+        ####################################################################
+        
+        # Convert the created_date string to a datetime object
+        created_date = datetime.datetime.fromisoformat(created_date_str)
+        # Get the current date
+        current_date = datetime.datetime.now()
+        # Calculate the difference in days
+        difference = (current_date - created_date).days
+        if difference <= 5:
+            
+            #####################################################################################
+            #######################skip posting if url is already posted on bluesky##############
+            #####################################################################################
+            
+            search_params = models.app.bsky.feed.search_posts.Params(
+                    q= url,
+                    author=at_client.me.did,
+                    limit=1,
+                    sort='oldest'
+                )
+            
+            response = at_client.app.bsky.feed.search_posts(params=search_params)
+            if response.hits_total is not None:
+                print("BSKY POST ALREADY EXISTS, NO ACTION NEEDED")
+            else:
+                # Open the image file in binary mode
+                with open(image_path, 'rb') as img_file:
+                    # Read the content of the image file
+                    img_data = img_file.read()
+                
+                # Now you can upload the image data
+                blob_resp = requests.post(
+                    "https://bsky.social/xrpc/com.atproto.repo.uploadBlob",
+                    headers={
+                        "Content-Type": "image/png",
+                        "Authorization": "Bearer " + access_token,
+                    },
+                    data=img_data,
+                )
+                blob_resp.raise_for_status()
+                card["thumb"] = blob_resp.json()["blob"]
+                card = {
+                "uri": url,
+                "title": title_value,
+                "description": description_value,
+                }
+                embed_post = {
+                "$type": "app.bsky.embed.external",
+                "external": card,
+                }
+                #text = 'Check out a new post on my blog.'
+                text = 'Testing automated Bsky post creation'
+                post_with_link_card_from_website = at_client.send_post(text=text, embed=embed_post)
+                print(post_with_link_card_from_website.uri)
     else:
         print(f"No YAML front matter found in: {file_path}")
 
 def main():
-    posts_directory = 'docs/posts'  # Update this path
-    path = 'docs/posts'
-    get_yaml_frontmatter(path)
-    
-    # Print all directories and files in the .cache directory
-    cache_directory = '/home/runner/work/test-github-action/test-github-action/site/assets/images/social/posts'
-    print(f"Contents of the '{cache_directory}' directory:")
-    
-    if os.path.exists(cache_directory):
-        for entry in os.listdir(cache_directory):
-            entry_path = os.path.join(cache_directory, entry)
-            if os.path.isdir(entry_path):
-                print(f"Directory: {entry}")
-            else:
-                print(f"File: {entry}")
+    BLUESKY_HANDLE = os.environ.get('BSKY_HANDLE')
+    BLUESKY_APP_PASSWORD = os.environ.get('BSKY_APP_PWD')
+    # Make sure the environment variables are set
+    if not BLUESKY_HANDLE or not BLUESKY_APP_PASSWORD:
+        raise ValueError("Environment variables BLUESKY_HANDLE and BLUESKY_APP_PASSWORD must be set.")
     else:
-        print(f"The directory '{cache_directory}' does not exist.")
+        at_client = Client()
+        at_client.login(BLUESKY_HANDLE, BLUESKY_APP_PASSWORD)
+        resp = requests.post(
+            "https://bsky.social/xrpc/com.atproto.server.createSession",
+            json={"identifier": BLUESKY_HANDLE, "password": BLUESKY_APP_PASSWORD},
+        )
+        resp.raise_for_status()
+        session = resp.json()
+        access_token = session["accessJwt"]
+        path = 'docs/posts'
+        image_directory = '/home/runner/work/test-github-action/test-github-action/site/assets/images/social/posts'
+        get_yaml_frontmatter(path,access_token, at_client,image_directory)
 
 if __name__ == "__main__":
     main()
