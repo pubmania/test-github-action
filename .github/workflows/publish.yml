@@ -36,4 +36,5 @@ jobs:
         env:
           BSKY_HANDLE: ${{ secrets.BSKY_HANDLE }}
           BSKY_APP_PWD: ${{ secrets.BSKY_APP_PWD }}
-          DID: ${{ secrets.DID }}        
+          DID: ${{ secrets.DID }}
+          GITHUB_WORKSPACE: ${{ github.workspace }}
