@@ -1,12 +1,12 @@
 # post_deploy.py
 import os
 import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 def get_recent_posts(posts_directory, days=5):
-    # Calculate the cutoff date
-    cutoff_date = datetime.now() - timedelta(days=days)
-    
+    # Calculate the cutoff date and make it timezone-aware
+    cutoff_date = (datetime.now(timezone.utc) - timedelta(days=days))
+
     # List to store the formatted paths
     formatted_paths = []
 
@@ -18,14 +18,14 @@ def get_recent_posts(posts_directory, days=5):
         if os.path.isfile(file_path):
             # Get the git creation date of the file
             try:
-                # Get the commit date for the file
+                # Get the creation date for the file (first commit that added the file)
                 commit_date_str = subprocess.check_output(
-                     ['git', 'log', '--format=%cd', '--date=iso', '--diff-filter=A', '-n', '1', filename],
+                    ['git', 'log', '--format=%cd', '--date=iso', '--diff-filter=A', '-n', '1', filename],
                     cwd=posts_directory
                 ).decode('utf-8').strip()
                 
-                # Parse the commit date
-                commit_date = datetime.fromisoformat(commit_date_str)
+                # Parse the commit date and make it timezone-aware
+                commit_date = datetime.fromisoformat(commit_date_str).replace(tzinfo=timezone.utc)
 
                 # Check if the commit date is within the cutoff date
                 if commit_date >= cutoff_date:
@@ -38,7 +38,7 @@ def get_recent_posts(posts_directory, days=5):
 
                         if slug and created_date:
                             # Format the date and create the path
-                            created_date_obj = datetime.fromisoformat(created_date)
+                            created_date_obj = datetime.fromisoformat(created_date).replace(tzinfo=timezone.utc)
                             formatted_path = f"{created_date_obj.year}/{created_date_obj.month:02}/{created_date_obj.day:02}/{slug}.html"
                             formatted_paths.append(formatted_path)
 
