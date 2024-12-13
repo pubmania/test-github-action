@@ -38,3 +38,4 @@ jobs:
           BSKY_APP_PWD: ${{ secrets.BSKY_APP_PWD }}
           DID: ${{ secrets.DID }}
           GITHUB_WORKSPACE: ${{ github.workspace }}
+          SITE_URL: ${{ vars.SITE_URL }}
