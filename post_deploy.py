@@ -51,7 +51,7 @@ def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directo
         mm = f"{created_date.month:02}"
         dd = f"{created_date.day:02}"
         print(f"url: https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html")
-        print(f"img_path: {image_directory}/{file_path.split('.')[0]}.png")
+        print(f"img_path: {image_directory}/{file_path.split('/')[-1].split('.')[0]}.png")
         url = f"https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html"
         image_path = f"{image_directory}/{file_path.split('.')[0]}.png"
         
