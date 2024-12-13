@@ -51,9 +51,9 @@ def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directo
         mm = f"{created_date.month:02}"
         dd = f"{created_date.day:02}"
         print(f"url: https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html")
-        print(f"img_file: {image_directory}/{file_path.split('.')[0]}.png")
+        print(f"img_path: {image_directory}/{file_path.split('.')[0]}.png")
         url = f"https://mgw.dumatics.com/{yyyy}/{mm}/{dd}/{slug_value}.html"
-        img_file = f"{image_directory}/{file_path.split('.')[0]}.png"
+        image_path = f"{image_directory}/{file_path.split('.')[0]}.png"
         
         ####################################################################
         #### skip posting if created date is more than 5 days old###########
@@ -87,7 +87,6 @@ def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directo
                     # Read the content of the image file
                     img_data = img_file.read()
                 
-                # Now you can upload the image data
                 blob_resp = requests.post(
                     "https://bsky.social/xrpc/com.atproto.repo.uploadBlob",
                     headers={
@@ -97,16 +96,18 @@ def process_file_yaml(file_path, yaml_regex,access_token,at_client,image_directo
                     data=img_data,
                 )
                 blob_resp.raise_for_status()
-                card["thumb"] = blob_resp.json()["blob"]
                 card = {
                 "uri": url,
                 "title": title_value,
                 "description": description_value,
+                "thumb": blob_resp.json()["blob"]
                 }
+                
                 embed_post = {
                 "$type": "app.bsky.embed.external",
                 "external": card,
                 }
+                
                 #text = 'Check out a new post on my blog.'
                 text = 'Testing automated Bsky post creation'
                 post_with_link_card_from_website = at_client.send_post(text=text, embed=embed_post)
