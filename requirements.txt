@@ -14,4 +14,4 @@ pillow
 cairosvg
 cairocffi
 plantuml_markdown
-yaml
+PyYAML
