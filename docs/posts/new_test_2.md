@@ -1,4 +1,4 @@
-.---
+---
 title: "Bluesky for comments on mkdocs blog 2"
 slug: "bluesky-for-comments-on-mkdocs-blog-2"
 authors: [ankit]
