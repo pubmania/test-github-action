@@ -15,6 +15,11 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+      - name: Install Devanagari font
+        run: |
+          sudo mkdir -p /usr/share/fonts/truetype/hind
+          sudo cp fonts/Hind-Regular.ttf /usr/share/fonts/truetype/hind/
+          sudo fc-cache -f -v  # Refresh font cache
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
