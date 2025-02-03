@@ -1,5 +1,6 @@
 ---
 title: "हमारी कहानी"
+slug: hamaari-kahaani
 date: 
   created: 2025-02-02
 authors: ['ankit']
