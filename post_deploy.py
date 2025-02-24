@@ -6,6 +6,7 @@ import requests
 import frontmatter  # pip install python-frontmatter
 from git import Repo
 from atproto import Client, models
+from datetime import datetime
 
 def get_yaml_frontmatter(path, access_token, at_client, image_directory, site_url, repo):
     """Process all Markdown files in the given path."""
@@ -41,9 +42,14 @@ def process_file_yaml(file_path, yaml_regex, access_token, at_client, image_dire
         slug_value = frontmatter_dict['slug']
         title_value = frontmatter_dict['title']
         description_value = frontmatter_dict.get('description', '')
+        # Ensure created_date is a datetime object
+        if isinstance(created_date, datetime.date):
+            created_date = datetime.combine(created_date, datetime.min.time())  # Convert to datetime
+        elif not isinstance(created_date, datetime):
+            raise ValueError(f"Invalid date format in {file_path}: {created_date}")
         
         # Skip if post is older than 5 days
-        if (datetime.datetime.now() - created_date).days > 5:
+        if (datetime.now() - created_date).days > 5:
             print(f"Skipping {file_path} - Post is older than 5 days")
             return
 
