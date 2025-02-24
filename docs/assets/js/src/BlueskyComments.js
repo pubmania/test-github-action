@@ -161,17 +161,17 @@ export class BlueskyComments extends HTMLElement {
 
     try {
       // 1. FETCH JSON FROM GITHUB MAIN BRANCH ======================
-      const jsonResponse = await fetch(
-        "https://raw.githubusercontent.com/pubmania/test-github-action/refs/heads/main/comments-data.json"
-      );
+     // const jsonResponse = await fetch(
+     //   "https://raw.githubusercontent.com/pubmania/test-github-action/refs/heads/main/comments-data.json"
+     // );
       
-      if (!jsonResponse.ok) {
-        throw new Error(`Failed to fetch JSON: ${jsonResponse.status}`);
-      }
+     // if (!jsonResponse.ok) {
+     //   throw new Error(`Failed to fetch JSON: ${jsonResponse.status}`);
+     // }
       
-      const urlMap = await jsonResponse.json();
-      const blueskyUrl = urlMap[assembledUrl] || this.getAttribute("url");
-      
+     // const urlMap = await jsonResponse.json();
+     // const blueskyUrl = urlMap[assembledUrl] || this.getAttribute("url");
+      const blueskyUrl = this.getAttribute("url");
       // 2. REST OF ORIGINAL LOGIC (WITHOUT API SEARCH) ==============
       if (blueskyUrl) {
         const atUri = await this.#resolvePostUrl(blueskyUrl);
