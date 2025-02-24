@@ -17,5 +17,5 @@ plantuml_markdown
 PyYAML
 atproto
 python-frontmatter
+requests
 gitpython
-python-dotenv
