@@ -16,3 +16,6 @@ cairocffi
 plantuml_markdown
 PyYAML
 atproto
+python-frontmatter
+gitpython
+python-dotenv
