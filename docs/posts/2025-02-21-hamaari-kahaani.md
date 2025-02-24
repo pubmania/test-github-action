@@ -1,13 +1,15 @@
 ---
-title: "हमारी कहानी"
-slug: hamaari-kahaani
-date: 
-  created: 2025-02-21
-authors: ['ankit']
-categories: 
-  - "कवितायेँ"
-  - "प्रेम-रस"
+authors:
+- ankit
+bluesky_url: https://bsky.app/profile/ankit.dumatics.com/post/3liwndfwsxg2o
 bsky: true
+categories:
+- कवितायेँ
+- प्रेम-रस
+date:
+  created: 2025-02-21
+slug: hamaari-kahaani
+title: हमारी कहानी
 ---
 
 ```poem
