@@ -1,3 +1,4 @@
+# post_deploy.py
 import os
 import re
 import yaml
@@ -7,22 +8,38 @@ import frontmatter  # pip install python-frontmatter
 from git import Repo
 from atproto import Client, models
 
+def is_last_commit_by_script(repo):
+    """Check if last commit was made by this script"""
+    last_commit = repo.head.commit
+    return "Add Bluesky URL for" in last_commit.message
+
 def get_yaml_frontmatter(path, access_token, at_client, image_directory, site_url, repo):
     """Process all Markdown files in the given path."""
     yaml_regex = re.compile(r'^(---\n.*?\n---\n)', re.DOTALL)
+    modified_files = []
 
     if os.path.isdir(path):
         for filename in os.listdir(path):
             if filename.endswith('.md'):
                 file_path = os.path.join(path, filename)
-                process_file_yaml(file_path, yaml_regex, access_token, at_client, image_directory, site_url, repo)
+                if process_file_yaml(file_path, yaml_regex, access_token, at_client, image_directory, site_url, modified_files):
+                    modified_files.append(file_path)
     elif os.path.isfile(path) and path.endswith('.md'):
-        process_file_yaml(path, yaml_regex, access_token, at_client, image_directory, site_url, repo)
+        if process_file_yaml(path, yaml_regex, access_token, at_client, image_directory, site_url, modified_files):
+            modified_files.append(path)
     else:
         print("Provided path is neither a valid directory nor a .md file.")
 
-def process_file_yaml(file_path, yaml_regex, access_token, at_client, image_directory, site_url, repo):
-    """Process a single Markdown file."""
+    # Commit all changes at once if any files were modified
+    if modified_files:
+        repo.index.add(modified_files)
+        repo.index.commit("Update Bluesky URLs in frontmatter")
+        origin = repo.remote(name="origin")
+        origin.push()
+        print(f"Committed updates for {len(modified_files)} posts")
+
+def process_file_yaml(file_path, yaml_regex, access_token, at_client, image_directory, site_url, modified_files):
+    """Process a single Markdown file. Returns True if modified."""
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
     
@@ -31,54 +48,46 @@ def process_file_yaml(file_path, yaml_regex, access_token, at_client, image_dire
         frontmatter_content = match.group(1)
         frontmatter_dict = yaml.safe_load(frontmatter_content.split('---')[1].strip())
         
-        # Skip if Bluesky URL already exists
+        # Skip if Bluesky URL already exists (existing logic)
         if 'bluesky_url' in frontmatter_dict and frontmatter_dict['bluesky_url']:
             print(f"Skipping {file_path} - Bluesky URL already exists")
-            return
+            return False
 
-        # Extract metadata
+        # Existing date handling (unchanged)
         created_date = frontmatter_dict['date']['created']
-        slug_value = frontmatter_dict['slug']
-        title_value = frontmatter_dict['title']
-        description_value = frontmatter_dict.get('description', '')
-
-        ####################################################################
-        #### skip posting if created date is more than 5 days old###########
-        ####################################################################
         created_date_str = f"{created_date}"
-        # Convert the created_date string to a datetime object
         created_date = datetime.datetime.fromisoformat(created_date_str)
-        # Get the current date
         current_date = datetime.datetime.now()
-        # Calculate the difference in days
         difference = (current_date - created_date).days
         if difference > 5:        
             print(f"Skipping {file_path} - Post is older than 5 days")
-            return
+            return False
 
-        # Generate URLs
+        # Existing URL generation and Bluesky posting (unchanged)
         yyyy = created_date.year
         mm = f"{created_date.month:02}"
         dd = f"{created_date.day:02}"
+        slug_value = frontmatter_dict['slug']
+        title_value = frontmatter_dict['title']
+        description_value = frontmatter_dict.get('description', '')
         url = f"{site_url}/{yyyy}/{mm}/{dd}/{slug_value}.html"
         image_path = f"{image_directory}/{file_path.split('/')[-1].split('.')[0]}.png"
 
-        # Create Bluesky post
+        # Existing Bluesky post creation (unchanged)
         bluesky_url = create_bluesky_post(url, title_value, description_value, image_path, access_token, at_client)
         if not bluesky_url:
             print(f"Failed to create Bluesky post for {file_path}")
-            return
+            return False
 
-        # Update frontmatter with Bluesky URL
+        # Update frontmatter (existing logic)
         post = frontmatter.load(file_path)
         post.metadata['bluesky_url'] = bluesky_url
         with open(file_path, 'w') as f:
             f.write(frontmatter.dumps(post))
         
-        # Commit changes
-        repo.index.add([file_path])
-        repo.index.commit(f"Add Bluesky URL for {url}")
         print(f"Updated {file_path} with Bluesky URL: {bluesky_url}")
+        return True
+    return False
 
 def create_bluesky_post(url, title, description, image_path, access_token, at_client):
     """Create a Bluesky post and return the post URL."""
@@ -128,6 +137,9 @@ def main():
 
     # Setup Git repository
     repo = Repo(os.getcwd())
+    if is_last_commit_by_script(repo):
+        print("Last commit was made by this script. Exiting to prevent cyclic runs.")
+        return
     origin = repo.remote(name="origin")
     origin.set_url(f"https://{GITHUB_TOKEN}@github.com/pubmania/test-github-action.git")
 
