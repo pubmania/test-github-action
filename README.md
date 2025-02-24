@@ -1,3 +1,4 @@
+```mermaid
 graph TD
     A[GitHub Action] --> B[Build Temp Site]
     B --> C{Run Python Script}
@@ -7,3 +8,4 @@ graph TD
     F --> G[Update Frontmatter Metadata]
     G --> H[Rebuild Site with Updated Metadata]
     H --> I[Deploy to GitHub Pages]
+```
